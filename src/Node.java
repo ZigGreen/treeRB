@@ -7,9 +7,9 @@
 class Node<K, V> implements INodeColored<K,V> {
     enum State {BLACK, RED}
 
-    private INode<K, V> left;
-    private INode<K, V> right;
-    private INode<K, V> parent;
+    private INodeColored<K, V> left;
+    private INodeColored<K, V> right;
+    private INodeColored<K, V> parent;
     private State color;
     private V data;
     private K key;
@@ -42,32 +42,32 @@ class Node<K, V> implements INodeColored<K,V> {
     }
 
     @Override
-    public INode<K, V> getLeft() {
+    public INodeColored<K, V> getLeft() {
         return left;
     }
 
     @Override
-    public INode<K, V> setLeft(INode<K, V> l) {
+    public INodeColored<K, V> setLeft(INodeColored<K, V> l) {
         return  left = l;
     }
 
     @Override
-    public INode<K, V> getRight() {
+    public INodeColored<K, V> getRight() {
         return right;
     }
 
     @Override
-    public INode<K, V> setRight(INode<K, V> r) {
+    public INodeColored<K, V> setRight(INodeColored<K, V> r) {
         return  right = r;
     }
 
     @Override
-    public INode<K, V> getParent() {
+    public INodeColored<K, V> getParent() {
         return parent;
     }
 
     @Override
-    public INode<K, V> setParent(INode<K, V> p) {
+    public INodeColored<K, V> setParent(INodeColored<K, V> p) {
         return parent = p;
     }
 

@@ -21,13 +21,13 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
     public boolean containsKey(Object key) {
         if (key == null) throw new NullPointerException();
         K k = (K) key;
-        INode<K, V> it = findNode(k);
+        INodeColored<K, V> it = findNode(k);
         return (it != null);
 
     }
 
     public V put(K key, V data) {
-        INode<K, V> current, parent, x;
+        INodeColored<K, V> current, parent, x;
 
 
     /* find where node belongs */
@@ -57,7 +57,7 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
             else
                 parent.setRight(x);
         } else {
-            root = (INodeColored<K, V>) x;
+            root =  x;
         }
 
         //insertFixup(x);
@@ -67,7 +67,7 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
     public V get(Object key) {
         if (key == null) throw new NullPointerException();
         K k = (K) key;
-        INode<K, V> it = findNode(k);
+        INodeColored<K, V> it = findNode(k);
         if (it != null)
             return it.getValue();
 
@@ -76,18 +76,18 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
 
     public V remove(Object key) {
 
-        INode<K, V> x, y;
+        INodeColored<K, V> x, y;
         if (key == null) throw new NullPointerException();
         K k = (K) key;
-        INode<K, V> z = findNode(k);
+        INodeColored<K, V> z = findNode(k);
         if (z == null) return null;
         V oldData = z.getValue();
 
         if (z.getLeft() == null || z.getRight() == null) {
-        /* y has a NIL node as a child */
+        /* y has a null node as a child */
             y = z;
         } else {
-        /* find tree successor with a NIL node as a child */
+        /* find tree successor with a null node as a child */
             y = z.getRight();
             while (y.getLeft() != null) y = y.getLeft();
         }
@@ -107,7 +107,7 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
             else
                 y.getParent().setRight(x);
         } else
-            root = (INodeColored<K, V>) x;
+            root =  x;
 
         if (y != z) {
             z.setKey(y.getKey());
@@ -115,13 +115,13 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
         }
 
 
-        //if (y.color == State.BLACK)
+        //if (y.color == true)
         //deleteFixup(x);
         return oldData;
     }
 
-    private INode<K, V> findNode(K key) {
-        INode<K, V> it = root;
+    private INodeColored<K, V> findNode(K key) {
+        INodeColored<K, V> it = root;
 
         while (it != null) {
             int compared = key.compareTo(it.getKey());
@@ -134,129 +134,128 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
 
     }
 
-    /**
-     * void deleteFixup(Node<K, V> x) {
-     * <p/>
-     * /*************************************
-     * maintain Red-Black tree balance  *
-     * after deleting node x            *
-     * ************************************
-     * <p/>
-     * while (x != root && x.color == State.BLACK) {
-     * if (x == x.parent.left) {
-     * Node<K, V> w = x.parent.right;
-     * if (w.color == State.RED) {
-     * w.color = State.BLACK;
-     * x.parent.color = State.RED;
-     * rotateLeft(x.parent);
-     * w = x.parent.right;
-     * }
-     * if (w.left.color == State.BLACK && w.right.color == State.BLACK) {
-     * w.color = State.RED;
-     * x = x.parent;
-     * } else {
-     * if (w.right.color == State.BLACK) {
-     * w.left.color = State.BLACK;
-     * w.color = State.RED;
-     * rotateRight(w);
-     * w = x.parent.right;
-     * }
-     * w.color = x.parent.color;
-     * x.parent.color = State.BLACK;
-     * w.right.color = State.BLACK;
-     * rotateLeft(x.parent);
-     * x = root;
-     * }
-     * } else {
-     * Node<K, V> w = x.parent.left;
-     * if (w.color == State.RED) {
-     * w.color = State.BLACK;
-     * x.parent.color = State.RED;
-     * rotateRight(x.parent);
-     * w = x.parent.left;
-     * }
-     * if (w.right.color == State.BLACK && w.left.color == State.BLACK) {
-     * w.color = State.RED;
-     * x = x.parent;
-     * } else {
-     * if (w.left.color == State.BLACK) {
-     * w.right.color = State.BLACK;
-     * w.color = State.RED;
-     * rotateLeft(w);
-     * w = x.parent.left;
-     * }
-     * w.color = x.parent.color;
-     * x.parent.color = State.BLACK;
-     * w.left.color = State.BLACK;
-     * rotateRight(x.parent);
-     * x = root;
-     * }
-     * }
-     * }
-     * x.color = State.BLACK;
-     * }
-     * <p/>
-     * <p/>
-     * <p/>
-     * private void rotateRight(Node<K, V> x) {
-     * <p/>
-     * /**************************
-     * rotate node x to left *
-     * *************************
-     * <p/>
-     * Node<K, V> y = x.left;
-     * <p/>
-     * /* establish x.left link *
-     * x.left = y.right;
-     * if (y.right != NIL) y.right.parent = x;
-     * <p/>
-     * /* establish y.parent link *
-     * if (y != NIL) y.parent = x.parent;
-     * if (x.parent != NIL) {
-     * if (x == x.parent.left)
-     * x.parent.left = y;
-     * else
-     * x.parent.right = y;
-     * } else {
-     * root = y;
-     * }
-     * <p/>
-     * /* link x and y *
-     * y.right = x;
-     * if (x != NIL) x.parent = y;
-     * }
-     * <p/>
-     * private void rotateLeft(Node<K, V> x) {
-     * <p/>
-     * /**************************
-     * rotate node x to left *
-     * *************************
-     * <p/>
-     * Node<K, V> y = x.right;
-     * <p/>
-     * /* establish x.right link *
-     * x.right = y.left;
-     * if (y.left != NIL) y.left.parent = x;
-     * <p/>
-     * /* establish y.parent link *
-     * if (y != NIL) y.parent = x.parent;
-     * if (x.parent != NIL) {
-     * if (x == x.parent.left)
-     * x.parent.left = y;
-     * else
-     * x.parent.right = y;
-     * } else {
-     * root = y;
-     * }
-     * <p/>
-     * /* link x and y *
-     * y.left = x;
-     * if (x != NIL) x.parent = y;
-     * }
-     */
+
+    void deleteFixup(INodeColored<K, V> x) {
+
+        /*************************************
+         * maintain Red-Black tree balance  *
+         * after deleting node x            *
+         * ************************************/
+
+        while (x != root && x.getColor())
+
+        {
+            if (x == x.getParent().getLeft()) {
+                INodeColored<K, V> w = x.getParent().getRight();
+                if (!w.getColor()) {
+                    w.setColor(true);
+                    x.getParent().setColor(false);  
+                    rotateLeft(x.getParent());
+                    w = x.getParent().getRight();
+                }
+                if (w.getLeft().getColor() && w.getRight().getColor() ) {
+                    w.setColor(false);
+                    x = x.getParent();
+                } else {
+                    if (w.getRight().getColor()) {
+                        w.getLeft().setColor(true);
+                        w.setColor(false);
+                        rotateRight(w);
+                        w = x.getParent().getRight();
+                    }
+                    w.setColor(x.getParent().getColor());
+                    x.getParent().setColor(true);
+                    w.getRight().setColor(true);
+                    rotateLeft(x.getParent());
+                    x = root;
+                }
+            } else {
+                INodeColored<K, V> w = x.getParent().getLeft();
+                if (!w.getColor()) {
+                    w.setColor(true);
+                    x.getParent().setColor(false);
+                    rotateRight(x.getParent());
+                    w = x.getParent().getLeft();
+                }
+                if (w.getRight().getColor() && w.getLeft().getColor()) {
+                    w.setColor(false);
+                    x = x.getParent();
+                } else {
+                    if (w.getLeft().getColor() ) {
+                        w.getRight().setColor(true);
+                        w.setColor(false);
+                        rotateLeft(w);
+                        w = x.getParent().getLeft();
+                    }
+                    w.setColor( x.getParent().getColor());
+                    x.getParent().setColor(true);
+                    w.getLeft().setColor(true);
+                    rotateRight(x.getParent());
+                    x = root;
+                }
+            }
+        }
+
+        x.setColor(true);
+    }
+
+    private void rotateRight(INodeColored<K, V> x) {    //TODO: переписать
+
+        /**************************
+         rotate node x to left *
+         *************************/
+
+        INodeColored<K, V> y = x.getLeft();
+
+      /* establish x.left link */
+        x.setLeft( y.getRight());
+        if (y.getRight() != null) y.getRight().setParent(x);
+
+      /* establish y.parent link */
+        if (y != null) y.setParent(x.getParent());
+        if (x.getParent() != null) {
+            if (x == x.getParent().getLeft())
+                x.getParent().setLeft(y);
+            else
+                x.getParent().setRight(y);
+        } else {
+            root = y;
+        }
+
+      /* link x and y */
+        y.setRight(x);
+        if (x != null) x.setParent(y);
+    }
+
+    private void rotateLeft(INodeColored<K, V> x) {   //TODO: переписать
+
+        /**************************
+         rotate node x to left *
+         *************************/
+
+        INodeColored<K, V> y = x.getRight();
+        /** establish x.right link */
+        x.setRight( y.getLeft());
+        if (y.getLeft() != null) y.getLeft().setParent(x);
+
+      /* establish y.parent link */
+        if (y != null) y.setParent(x.getParent());
+        if (x.getParent() != null) {
+            if (x == x.getParent().getLeft())
+                x.getParent().setLeft(y);
+            else
+                x.getParent().setRight(y);
+        } else {
+            root = y;
+        }
+
+      /* link x and y */
+        y.setLeft( x);
+        if (x != null) x.setParent(y);
+    }
 
     public void printTree() {
-        INode<K, V> it = root;
+        INodeColored<K, V> it = root;
         //rotateRight(root.left);
         while (it != null) {
             System.out.println(it.getKey() + " -> ");
