@@ -8,7 +8,6 @@
 
 
 public class Main {
-                   //ololo
     public static void main(String[] args) {
 
       RBTree<String,Integer> tree = new RBTree<String, Integer>();

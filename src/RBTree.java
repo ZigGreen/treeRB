@@ -11,10 +11,15 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
 
 
     private INodeColored<K, V> root;
-    private int m_size;
+    private INodeFactory<K, V> nodeFactory;
 
 
+    public RBTree(INodeFactory<K, V> nodeFactory) {
+        this.nodeFactory = nodeFactory;
+        root = null;
+    }
     public RBTree() {
+        this.nodeFactory = new NodeFactory<K, V>();
         root = null;
     }
 
@@ -46,7 +51,7 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
 
     /* setup new node */
 
-        x = new Node<K, V>(key, data);
+        x = nodeFactory.newNode(key, data);
         x.setParent(parent);
 
     /* insert node in tree */
@@ -116,7 +121,7 @@ public class RBTree<K extends Comparable<K>, V extends Comparable<V>> {
 
 
         //if (y.color == true)
-        //deleteFixup(x);
+        deleteFixup(x);
         return oldData;
     }
 
